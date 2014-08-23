@@ -7,9 +7,31 @@ TweetStream.configure do |config|
   config.auth_method        = :oauth
 end
 
+#ID of whatever account will be controlling the computer
+#Following the ID over using userstream prevents other tweets
+#which may show up in the newsfeed from being read.
+controllerID = 1418571380
+
 #should pull all *MY* tweets
-TweetStream::Client.new.userstream do |status|
-  # The status object is a special Hash with
-  # method access to its keys.
-  puts "#{status.text}"
+TweetStream::Client.new.follow(controllerID) do |status|
+  #Should probably avoid any commands that require sudo.
+  #Don't really want to give a web facing app that much power, anyway.
+  #puts "#{status.text}"
+  if status.text=='rb'
+    puts 'Reboot command received'
+  elsif status.text=='rbw'
+    puts 'Reboot to windows command received'
+    #grub-reboot 4
+  elsif status.text=='sd'
+    puts 'Shutdown command received'
+  elsif status.text=='vlup'
+    puts 'Volume up'
+    #amixer set Master 10%+ > /dev/null
+  elsif status.text=='vldn'
+    puts 'Volume down'
+    #amixer set Master 10%- > /dev/null
+  else
+    #No recognized command received. Do nothing.
+    puts "#{status.text}"
+  end
 end
