@@ -16,20 +16,25 @@ controllerID = 1418571380
 TweetStream::Client.new.follow(controllerID) do |status|
   #Should probably avoid any commands that require sudo.
   #Don't really want to give a web facing app that much power, anyway.
-  #puts "#{status.text}"
+  #
+  #Using system over exec to spawn a child shell to run commands in, rather
+  #than interrupting the current process. Backticks are still used on grub-reboot
+  #because I want to ensure it's set before calling reboot.
   if status.text=='rb'
     puts 'Reboot command received'
   elsif status.text=='rbw'
     puts 'Reboot to windows command received'
-    #grub-reboot 4
+    `grub-reboot 4`
+    system("reboot")
   elsif status.text=='sd'
     puts 'Shutdown command received'
+    system("shutdown")
   elsif status.text=='vlup'
     puts 'Volume up'
-    #amixer set Master 10%+ > /dev/null
+    system("amixer set Master 10%+ > /dev/null")
   elsif status.text=='vldn'
     puts 'Volume down'
-    #amixer set Master 10%- > /dev/null
+    system("amixer set Master 10%- > /dev/null")
   else
     #No recognized command received. Do nothing.
     puts "#{status.text}"
