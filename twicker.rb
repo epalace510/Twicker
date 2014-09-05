@@ -24,6 +24,8 @@ TweetStream::Client.new.follow(controllerID) do |status|
     puts 'Reboot command received'
   elsif status.text=='rbw'
     puts 'Reboot to windows command received'
+    #Issue: grub-reboot requires su access. But a webfacing app shouldn't have that
+    #many permissions.
     `grub-reboot 4`
     system("reboot")
   elsif status.text=='sd'
@@ -37,6 +39,6 @@ TweetStream::Client.new.follow(controllerID) do |status|
     system("amixer set Master 10%- > /dev/null")
   else
     #No recognized command received. Do nothing.
-    puts "#{status.text}"
+    #puts "#{status.text}"
   end
 end
